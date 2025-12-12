@@ -1,5 +1,6 @@
 import { motion, Variants } from 'framer-motion';
 import { Github, Linkedin, Mail, Phone, MapPin, ChevronDown } from 'lucide-react';
+import profileAvatar from '@/assets/profile-avatar.png';
 
 const Hero = () => {
   const scrollToAbout = () => {
@@ -71,6 +72,39 @@ const Hero = () => {
         initial="hidden"
         animate="visible"
       >
+        {/* Profile Avatar */}
+        <motion.div 
+          variants={itemVariants}
+          className="relative mb-8"
+        >
+          <div className="relative w-40 h-40 md:w-48 md:h-48 mx-auto">
+            {/* Glowing ring */}
+            <motion.div 
+              className="absolute inset-0 rounded-full"
+              style={{
+                background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)))',
+                padding: '3px',
+              }}
+              animate={{ 
+                boxShadow: [
+                  '0 0 20px hsl(var(--primary) / 0.4)',
+                  '0 0 40px hsl(var(--primary) / 0.6)',
+                  '0 0 20px hsl(var(--primary) / 0.4)',
+                ]
+              }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              <div className="w-full h-full rounded-full bg-background" />
+            </motion.div>
+            {/* Avatar image */}
+            <img 
+              src={profileAvatar} 
+              alt="Mohana Krishnan M V"
+              className="absolute inset-1 w-[calc(100%-8px)] h-[calc(100%-8px)] rounded-full object-cover"
+            />
+          </div>
+        </motion.div>
+
         <motion.div 
           variants={itemVariants}
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-6"
@@ -81,7 +115,7 @@ const Hero = () => {
 
         <motion.h1 
           variants={itemVariants}
-          className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6"
+          className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6"
         >
           <span className="text-foreground">Mohana</span>{' '}
           <span className="text-gradient">Krishnan</span>
