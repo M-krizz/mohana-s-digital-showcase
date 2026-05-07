@@ -1,7 +1,8 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, lazy, useRef, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
-import SceneManager from './core/SceneManager';
-import CameraController from './core/CameraController';
+
+const SceneManager = lazy(() => import('./core/SceneManager'));
+const CameraController = lazy(() => import('./core/CameraController'));
 import Overlay from './components/ui/Overlay';
 import Cursor from './components/Cursor';
 import { EffectComposer, Bloom, Noise, Vignette, ChromaticAberration } from '@react-three/postprocessing';
@@ -41,20 +42,31 @@ export default function App() {
 
 function PostProcessingEffects() {
   const isTransitioning = useAppStore((state) => state.isTransitioning);
-  const [aberration, setAberration] = React.useState([0, 0]);
+  const aberrationRef = useRef();
 
-  React.useEffect(() => {
+  useEffect(() => {
+    if (!aberrationRef.current) return;
+
     if (isTransitioning) {
       gsap.to({ val: 0 }, {
         val: 0.005,
         duration: 0.5,
-        onUpdate: function() { setAberration([this.targets()[0].val, this.targets()[0].val]); }
+        onUpdate: function() { 
+          if (aberrationRef.current) {
+            // Directly mutate the uniform to bypass React re-renders
+            aberrationRef.current.offset.set(this.targets()[0].val, this.targets()[0].val);
+          }
+        }
       });
     } else {
-      gsap.to({ val: aberration[0] }, {
+      gsap.to({ val: aberrationRef.current.offset.x }, {
         val: 0,
         duration: 0.8,
-        onUpdate: function() { setAberration([this.targets()[0].val, this.targets()[0].val]); }
+        onUpdate: function() { 
+          if (aberrationRef.current) {
+            aberrationRef.current.offset.set(this.targets()[0].val, this.targets()[0].val);
+          }
+        }
       });
     }
   }, [isTransitioning]);
@@ -64,7 +76,7 @@ function PostProcessingEffects() {
       <Bloom luminanceThreshold={1} luminanceSmoothing={0.9} height={300} intensity={1.5} />
       <Noise opacity={0.05} />
       <Vignette eskil={false} offset={0.1} darkness={0.5} />
-      <ChromaticAberration offset={aberration} radial={false} />
+      <ChromaticAberration ref={aberrationRef} offset={[0, 0]} radial={false} />
     </EffectComposer>
   );
 }

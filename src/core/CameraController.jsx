@@ -36,11 +36,9 @@ export default function CameraController() {
       z: target.position[2],
       duration: 1.6,
       ease: 'expo.inOut',
-      onUpdate: () => {
-        // Trigger UI entrance early (at 80% of the way)
-        if (tl.progress() > 0.8 && useAppStore.getState().isTransitioning) {
-          setIsTransitioning(false);
-        }
+      onComplete: () => {
+        // Transition completely finished, safe to scroll again
+        setIsTransitioning(false);
       }
     }, "-=0.1");
 

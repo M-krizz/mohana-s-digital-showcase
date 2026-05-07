@@ -7,19 +7,11 @@ import { content } from '../../content';
 const HomeUI = () => (
   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: 'white', pointerEvents: 'auto', textAlign: 'center', position: 'relative', height: '100%', justifyContent: 'center' }}>
     <div className="lm">
-      <div className="li" style={{ 
-        width: '220px', 
-        height: '220px', 
-        borderRadius: '50%', 
-        overflow: 'hidden', 
-        border: '3px solid #48CAE4',
-        boxShadow: '0 0 50px rgba(72, 202, 228, 0.4)',
-        marginBottom: '2rem'
-      }}>
+      <div className="li profile-avatar">
         <img src="/avatar_lofi.png" alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
       </div>
     </div>
-    <h1 className="lm" style={{ fontSize: '4.5rem', margin: '0 0 0.5rem 0', fontFamily: 'var(--font-serif)', fontStyle: 'italic', letterSpacing: '2px' }}>
+    <h1 className="lm hero-title" style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', letterSpacing: '2px' }}>
       <span className="li">{content.profile.name}</span>
     </h1>
     <h3 className="lm" style={{ color: '#48CAE4', fontSize: '1.2rem', margin: '0 0 2rem 0', fontWeight: '400', letterSpacing: '4px', textTransform: 'uppercase' }}>
@@ -51,6 +43,23 @@ const NavBar = () => {
   const sectionIndex = useAppStore((state) => state.sectionIndex);
   const setSectionIndex = useAppStore((state) => state.setSectionIndex);
   const isTransitioning = useAppStore((state) => state.isTransitioning);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 900);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 900);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const getLabel = (id) => {
+    if (!isMobile) return id === 'contact' ? 'Reach Out' : id;
+    switch(id) {
+      case 'experience': return 'Exp';
+      case 'projects': return 'Work';
+      case 'contact': return 'Reach';
+      default: return id;
+    }
+  };
 
   return (
     <div className="navbar-container" style={{ pointerEvents: 'auto' }}>
@@ -64,7 +73,7 @@ const NavBar = () => {
             }
           }}
         >
-          {sec.id === 'contact' ? 'Reach Out' : sec.id}
+          {getLabel(sec.id)}
         </a>
       ))}
     </div>
@@ -82,7 +91,7 @@ const AboutUI = () => (
       </p>
     </div>
     
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+    <div className="about-grid" style={{ display: 'grid', gap: '2rem' }}>
       <div className="lm">
         <div className="li">
           <h4 style={{ color: '#48CAE4', textTransform: 'uppercase', fontSize: '0.8rem', letterSpacing: '2px', marginBottom: '0.5rem' }}>Education</h4>
@@ -106,7 +115,7 @@ const SkillsUI = () => (
     <h2 className="lm" style={{ fontSize: '2rem', marginBottom: '1.5rem' }}>
       <span className="li">🛠️ Tech Stack Engine</span>
     </h2>
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2.5rem' }}>
+    <div className="skills-grid" style={{ display: 'grid', gap: '1.5rem' }}>
       <div>
         <h4 className="lm" style={{ color: '#48CAE4', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '1rem' }}><span className="li">Languages</span></h4>
         <div className="lm">
@@ -164,7 +173,7 @@ const ExperienceUI = () => (
 );
 
 const ProjectsUI = ({ onSelect }) => (
-  <div className="project-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', maxWidth: '1200px', gap: '1.5rem' }}>
+  <div className="project-grid">
     {content.projects.map((project, idx) => (
       <div key={idx} className="project-card lm" onClick={() => onSelect(project)} style={{ padding: '1.5rem', minHeight: '190px' }}>
         <div className="li">
@@ -198,7 +207,7 @@ const ExpandedProjectOverlay = ({ project, onClose }) => {
           {project.tech.map(t => <span key={t} className="skill-chip" style={{ fontSize: '0.75rem', padding: '0.4rem 1rem' }}>{t}</span>)}
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: '2.5rem' }}>
+        <div className="grid-split" style={{ display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: '2.5rem' }}>
           <div>
             <h4 style={{ color: '#48CAE4', textTransform: 'uppercase', marginBottom: '0.8rem', fontSize: '0.85rem', letterSpacing: '2px' }}>Mission Objectives</h4>
             {project.points.slice(0, 4).map((p, i) => (
@@ -237,10 +246,10 @@ const ContactUI = () => (
     <h2 className="lm" style={{ fontSize: '2rem', marginBottom: '2rem' }}><span className="li">📡 Reach Me Out</span></h2>
     <div className="lm">
       <div className="li" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', alignItems: 'center' }}>
-        <div style={{ display: 'flex', gap: '1rem', width: '100%', marginBottom: '1.5rem' }}>
+        <div className="contact-info-row" style={{ display: 'flex', gap: '1rem', width: '100%', marginBottom: '1.5rem' }}>
           <div style={{ flex: 1, padding: '1rem', background: 'rgba(255,255,255,0.05)', borderRadius: '15px', border: '1px solid rgba(72, 202, 228, 0.1)' }}>
             <p style={{ margin: '0 0 0.5rem 0', color: '#48CAE4', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '2px' }}>Direct Email</p>
-            <p style={{ fontSize: '0.95rem', margin: 0, fontWeight: '700' }}>{content.profile.email}</p>
+            <p style={{ fontSize: '0.95rem', margin: 0, fontWeight: '700', wordBreak: 'break-all' }}>{content.profile.email}</p>
           </div>
           <div style={{ flex: 1, padding: '1rem', background: 'rgba(255,255,255,0.05)', borderRadius: '15px', border: '1px solid rgba(72, 202, 228, 0.1)' }}>
             <p style={{ margin: '0 0 0.5rem 0', color: '#48CAE4', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '2px' }}>Mobile Uplink</p>
@@ -248,7 +257,7 @@ const ContactUI = () => (
           </div>
         </div>
         
-        <div style={{ display: 'flex', gap: '0.8rem', justifyContent: 'center' }}>
+        <div style={{ display: 'flex', gap: '0.8rem', justifyContent: 'center', flexWrap: 'wrap' }}>
           <a href={content.profile.linkedin} target="_blank" rel="noreferrer" className="skill-chip" style={{ width: '50px', height: '50px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
           </a>
