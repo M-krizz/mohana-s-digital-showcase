@@ -51,14 +51,30 @@ export function useScrollNavigation() {
       }
     };
 
+    const handleKeyDown = (e) => {
+      if (isTransitioning) return;
+      const now = Date.now();
+      if (now - lastScrollTime.current < SCROLL_COOLDOWN) return;
+
+      if (e.key === 'ArrowDown' || e.key === 'j') {
+        nextSection();
+        lastScrollTime.current = now;
+      } else if (e.key === 'ArrowUp' || e.key === 'k') {
+        prevSection();
+        lastScrollTime.current = now;
+      }
+    };
+
     window.addEventListener('wheel', handleWheel, { passive: true });
     window.addEventListener('touchstart', handleTouchStart, { passive: true });
     window.addEventListener('touchend', handleTouchEnd, { passive: true });
+    window.addEventListener('keydown', handleKeyDown);
     
     return () => {
       window.removeEventListener('wheel', handleWheel);
       window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchend', handleTouchEnd);
+      window.removeEventListener('keydown', handleKeyDown);
     };
   }, [isTransitioning, nextSection, prevSection]);
 }

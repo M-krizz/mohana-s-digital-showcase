@@ -3,13 +3,17 @@ import React from 'react';
 export default function LightSetup() {
   return (
     <>
-      {/* Dark Ambient Light */}
-      <ambientLight color="#05070a" intensity={0.2} />
-      
-      {/* Directional light for top-down subtle depth */}
-      <directionalLight color="#48CAE4" position={[0, 10, 0]} intensity={0.1} />
+      {/* Deep ambient for base visibility */}
+      <ambientLight color="#06091a" intensity={0.25} />
 
-      <fog attach="fog" args={['#05070a', 10, 80]} />
+      {/* Cool directional light from above */}
+      <directionalLight color="#48CAE4" position={[0, 10, 0]} intensity={0.12} />
+
+      {/* Warm accent from behind camera */}
+      <pointLight position={[0, 3, 5]} color="#FFE9B3" intensity={0.3} distance={20} />
+
+      {/* Deep space fog for depth */}
+      <fog attach="fog" args={['#05070a', 12, 75]} />
     </>
   );
 }
